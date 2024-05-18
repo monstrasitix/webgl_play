@@ -1,6 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
+import TSeslint from "typescript-eslint";
 
 
 export default [
@@ -10,5 +10,5 @@ export default [
         },
     },
     pluginJs.configs.recommended,
-    ...tseslint.configs.recommended,
+    ...TSeslint.configs.recommended,
 ];

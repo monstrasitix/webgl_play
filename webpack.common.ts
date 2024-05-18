@@ -1,7 +1,29 @@
 import { resolve } from "path";
-import { Configuration, RuleSetRule } from "webpack";
+import {
+    Configuration,
+    RuleSetRule,
+    NormalModuleReplacementPlugin,
+} from "webpack";
 import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import HTMLPlugin from "html-webpack-plugin";
+
+const ENTRY = "interface";
+
+export type Env = {
+    app?: string;
+};
+
+export type EnvParams = {
+    app: string;
+    mode: string;
+};
+
+export function parseEnvs(env: Env): EnvParams {
+    return {
+        app: env.app ?? ENTRY,
+        mode: "loop",
+    };
+}
 
 export function root(path: string): string {
     return resolve(__dirname, path);
@@ -14,15 +36,17 @@ export function rule(obj: RuleSetRule): RuleSetRule {
     };
 }
 
-export function common(): Configuration {
+export function common(params: EnvParams): Configuration {
+    const { app, mode } = parseEnvs(params);
+
     return {
         entry: {
-            app: root("./source/index.ts"),
+            app: root(`./source/${mode}.ts`),
         },
         output: {
-            filename: "[name].bundle.js",
             clean: true,
             path: root("./dist"),
+            filename: "[name].bundle.js",
         },
         module: {
             rules: [
@@ -37,21 +61,19 @@ export function common(): Configuration {
             ],
         },
         resolve: {
-            plugins: [
-                new TsconfigPathsPlugin(),
-            ],
-            extensions: [
-                ".js",
-                ".ts",
-                ".json",
-                ".glsl",
-            ],
+            plugins: [new TsconfigPathsPlugin()],
+            extensions: [".js", ".ts", ".json"],
         },
         plugins: [
             new HTMLPlugin({
                 template: root("./public/index.html"),
             }),
+            new NormalModuleReplacementPlugin(
+                new RegExp(ENTRY, "i"),
+                resource => {
+                    resource.request = resource.request.replace(ENTRY, app);
+                },
+            ),
         ],
     };
 }
-
