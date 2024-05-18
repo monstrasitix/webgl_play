@@ -19,29 +19,30 @@ export function setup() {
 
     gl.clearColor(0.5, 0.5, 0.5, 1.0);
 
-    const positionsSize = 2;
+    const buffer = {
+        position: gl.createBuffer(),
+    };
+
     const positions = new Float32Array([
-        0.0, 0.0, //
-        0.0, 0.5, //
-        0.7, 0.0, //
+        //
+        -0.25, -0.5,
+        //
+        0.0, 0.5,
+        //
+        0.25, -0.5,
     ]);
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.position);
     gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
 
-    const positionLocation = gl.getAttribLocation(program, "a_position");
-    gl.vertexAttribPointer(
-        positionLocation,
-        positionsSize,
-        gl.FLOAT,
-        false,
-        0,
-        0,
-    );
+    const attribute = {
+        position: gl.getAttribLocation(program, "a_position"),
+    };
+
+    gl.vertexAttribPointer(attribute.position, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(attribute.position);
 
     gl.useProgram(program);
-    gl.enableVertexAttribArray(positionLocation);
 }
 
 export function update() {
