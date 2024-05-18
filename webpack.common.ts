@@ -1,9 +1,5 @@
 import { resolve } from "path";
-import {
-    Configuration,
-    RuleSetRule,
-    NormalModuleReplacementPlugin,
-} from "webpack";
+import { Configuration, NormalModuleReplacementPlugin } from "webpack";
 import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 import HTMLPlugin from "html-webpack-plugin";
 
@@ -15,13 +11,11 @@ export type Env = {
 
 export type EnvParams = {
     app: string;
-    mode: string;
 };
 
 export function parseEnvs(env: Env): EnvParams {
     return {
         app: env.app ?? ENTRY,
-        mode: "loop",
     };
 }
 
@@ -29,19 +23,12 @@ export function root(path: string): string {
     return resolve(__dirname, path);
 }
 
-export function rule(obj: RuleSetRule): RuleSetRule {
-    return {
-        ...obj,
-        exclude: [/node_modules/i],
-    };
-}
-
 export function common(params: EnvParams): Configuration {
-    const { app, mode } = parseEnvs(params);
+    const { app } = parseEnvs(params);
 
     return {
         entry: {
-            app: root(`./source/${mode}.ts`),
+            [app]: root("./source/loop.ts"),
         },
         output: {
             clean: true,
@@ -50,14 +37,16 @@ export function common(params: EnvParams): Configuration {
         },
         module: {
             rules: [
-                rule({
+                {
                     test: /\.ts$/i,
                     use: "esbuild-loader",
-                }),
-                rule({
+                    exclude: [/node_modules/i],
+                },
+                {
                     test: /\.glsl$/i,
                     use: "raw-loader",
-                }),
+                    exclude: [/node_modules/i],
+                },
             ],
         },
         resolve: {
@@ -70,7 +59,7 @@ export function common(params: EnvParams): Configuration {
             }),
             new NormalModuleReplacementPlugin(
                 new RegExp(ENTRY, "i"),
-                resource => {
+                (resource) => {
                     resource.request = resource.request.replace(ENTRY, app);
                 },
             ),
