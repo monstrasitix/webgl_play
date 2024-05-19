@@ -3,9 +3,9 @@ import "webpack-dev-server";
 import { Configuration } from "webpack";
 import { merge } from "webpack-merge";
 
-import { EnvParams, common, root } from "./webpack.common";
+import { Env, common, root } from "./webpack.common";
 
-export default function (env: EnvParams): Configuration {
+export default function (env: Env): Configuration {
     return merge(common(env), {
         mode: "development",
         devServer: {

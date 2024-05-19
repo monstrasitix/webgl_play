@@ -2,9 +2,9 @@ import * as entry from "@/app/interface/entry";
 
 import { createLoop } from "@/utils/loop";
 
-document.addEventListener("DOMContentLoaded", function () {
-    entry.setup();
+entry.setup();
 
+document.addEventListener("DOMContentLoaded", function () {
     const loop = createLoop(function () {
         entry.update();
         entry.render();

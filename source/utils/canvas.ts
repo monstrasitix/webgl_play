@@ -3,18 +3,18 @@ export function createContext(): WebGLRenderingContext | null {
 }
 
 export function resizeCanvas(gl: WebGLRenderingContext) {
-    const exceedsWidth = gl.canvas.width !== innerWidth;
-    const exceedsHeight = gl.canvas.height !== innerHeight;
+    const widthChanged = gl.canvas.width !== innerWidth;
+    const heightChanged = gl.canvas.height !== innerHeight;
 
-    if (exceedsWidth) {
+    if (widthChanged) {
         gl.canvas.width = innerWidth;
     }
 
-    if (exceedsHeight) {
+    if (heightChanged) {
         gl.canvas.height = innerHeight;
     }
 
-    if (exceedsWidth || exceedsHeight) {
+    if (widthChanged || heightChanged) {
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     }
 }

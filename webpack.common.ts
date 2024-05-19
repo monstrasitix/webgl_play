@@ -1,30 +1,39 @@
+// Node
 import { resolve } from "path";
-import { Configuration, NormalModuleReplacementPlugin } from "webpack";
-import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
-import HTMLPlugin from "html-webpack-plugin";
 
-const ENTRY = "interface";
+// Webpack
+import { Configuration, NormalModuleReplacementPlugin } from "webpack";
+
+// Plugins
+import HTMLPlugin from "html-webpack-plugin";
+import { TsconfigPathsPlugin } from "tsconfig-paths-webpack-plugin";
 
 export type Env = {
     app?: string;
 };
 
-export type EnvParams = {
-    app: string;
-};
-
-export function parseEnvs(env: Env): EnvParams {
-    return {
-        app: env.app ?? ENTRY,
-    };
-}
-
 export function root(path: string): string {
     return resolve(__dirname, path);
 }
 
-export function common(params: EnvParams): Configuration {
-    const { app } = parseEnvs(params);
+/**
+ * Default entry from `./source/apps` folder.
+ */
+const ENTRY = "interface";
+
+class ResolveApp extends NormalModuleReplacementPlugin {
+    constructor(app: string) {
+        super(
+            new RegExp(ENTRY, "i"),
+            (resource) => {
+                resource.request = resource.request.replace(ENTRY, app);
+            },
+        );
+    }
+}
+
+export function common(env: Env): Configuration {
+    const { app = ENTRY } = env;
 
     return {
         entry: {
@@ -49,20 +58,15 @@ export function common(params: EnvParams): Configuration {
                 },
             ],
         },
-        resolve: {
-            plugins: [new TsconfigPathsPlugin()],
-            extensions: [".js", ".ts", ".json"],
-        },
         plugins: [
             new HTMLPlugin({
                 template: root("./public/index.html"),
             }),
-            new NormalModuleReplacementPlugin(
-                new RegExp(ENTRY, "i"),
-                (resource) => {
-                    resource.request = resource.request.replace(ENTRY, app);
-                },
-            ),
+            new ResolveApp(app),
         ],
+        resolve: {
+            plugins: [new TsconfigPathsPlugin()],
+            extensions: [".js", ".ts"],
+        },
     };
 }

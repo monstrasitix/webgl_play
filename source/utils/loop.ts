@@ -22,3 +22,4 @@ export function createLoop(callback: FrameRequestCallback) {
         stop,
     };
 }
+
