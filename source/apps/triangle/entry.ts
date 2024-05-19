@@ -16,6 +16,7 @@ const canvas = gl.canvas as HTMLElement;
 document.body.appendChild(canvas);
 
 export function setup() {
+    console.log(COLOR_GREY);
     gl.clearColor(...COLOR_GREY, 1.0);
 
     const program = quickShader(gl, vertexShader, fragmentShader)!;
