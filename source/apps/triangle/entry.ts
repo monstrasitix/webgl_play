@@ -13,9 +13,9 @@ import { createContext, resizeCanvas } from "@/utils/canvas";
 const gl = createContext()!;
 const canvas = gl.canvas as HTMLElement;
 
-export function setup() {
-    document.body.appendChild(canvas);
+document.body.appendChild(canvas);
 
+export function setup() {
     gl.clearColor(...COLOR_GREY, 1.0);
 
     const program = quickShader(gl, vertexShader, fragmentShader)!;
